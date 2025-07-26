@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parikshit Sharma - Site Reliability Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy Tones & Teal Accent (Slate, Stone, Teal) -->
+    <!-- Application Structure Plan: This version adopts a cleaner, more modular layout. It features a prominent hero section, followed by a dedicated "Impact Highlights" section (formerly Key Metrics) for immediate value proposition. The "Skills" section retains the radar chart for visual impact. The "Experience" section is presented as a refined, consolidated timeline. "Featured Projects" are presented as interactive cards. This structure prioritizes a clear narrative flow, guiding the user through Parikshit's profile from high-level impact to detailed capabilities and achievements, enhancing readability and engagement. -->
+    <!-- Visualization & Content Choices: 
+        - Hero/Impact: Goal: Engage/Impress. Method: Prominent text, dynamic stat cards (HTML/CSS) with subtle animations. Interaction: Hover effects. Justification: Creates an immediate strong impression and highlights key achievements upfront.
+        - Skills: Goal: Inform/Compare. Method: Radar Chart (Chart.js/Canvas). Interaction: Tooltips. Justification: Visually represents skill breadth and depth in a concise, engaging manner.
+        - Experience: Goal: Inform/Change. Method: Consolidated Timeline (HTML/CSS/JS). Interaction: Clear chronological flow with detailed bullet points. Justification: Provides a structured, easy-to-follow career narrative.
+        - Projects: Goal: Organize/Inform. Method: Interactive Cards (HTML/CSS/JS). Interaction: Clickable cards revealing project details in a modal. Justification: Allows for exploration of specific achievements without cluttering the main page.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* stone-50 */
+            color: #374151; /* gray-700 */
+            background-image: linear-gradient(to bottom, #f3f4f6, #f9fafb); /* Subtle gradient */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 550px; /* Slightly wider for better chart display */
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px; /* Slightly taller */
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.75rem;
+            top: 0.5rem; /* Adjust position for better alignment */
+            width: 16px; /* Slightly smaller dot */
+            height: 16px;
+            border-radius: 50%;
+            background-color: #14b8a6; /* teal-500 */
+            border: 3px solid #f9fafb; /* stone-50 */
+            z-index: 1;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem; /* Add padding for content */
+        }
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content-inner {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal.show .modal-content-inner {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .modal:not(.show) .modal-content-inner {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+
+        /* Key Metrics Animation */
+        .impact-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.6s ease-out forwards;
+        }
+        .impact-card:nth-child(1) { animation-delay: 0.1s; }
+        .impact-card:nth-child(2) { animation-delay: 0.2s; }
+        .impact-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-10">
+        <!-- Hero Section -->
+        <section class="text-center mb-16 py-12 bg-gradient-to-r from-teal-500 to-sky-600 text-white rounded-xl shadow-lg">
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">PARIKSHIT SHARMA</h1>
+            <p class="text-2xl md:text-3xl font-medium mb-6">Site Reliability Engineer</p>
+            <p class="max-w-3xl mx-auto text-lg opacity-90">
+                Driving system reliability, cost optimization, and operational excellence through innovative automation and cloud infrastructure solutions.
+            </p>
+            <div class="mt-8 flex flex-wrap justify-center items-center space-x-6 text-lg">
+                <a href="mailto:parikshit4520@gmail.com" class="flex items-center hover:underline">
+                    <span class="mr-2">&#9993;</span> parikshit4520@gmail.com
+                </a>
+                <a href="https://www.linkedin.com/in/parikshit-sharma-49a4761a7" target="_blank" class="flex items-center hover:underline">
+                    <span class="mr-2">&#128279;</span> LinkedIn Profile
+                </a>
+                <span class="flex items-center">
+                    <span class="mr-2">&#128205;</span> Hyderabad, India
+                </span>
+            </div>
+        </section>
+
+        <!-- Profile Summary -->
+        <section id="profile" class="mb-16 max-w-5xl mx-auto text-center bg-white p-8 rounded-xl shadow-lg">
+             <h2 class="text-3xl font-bold text-gray-800 mb-4">Profile Summary</h2>
+             <p class="text-lg text-gray-600 leading-relaxed">
+                A highly accomplished and results-driven Site Reliability Engineer with over 5 years of hands-on experience in designing, implementing, and optimizing robust cloud infrastructure, automation, and monitoring solutions. Proven ability to significantly reduce downtime, accelerate deployment cycles, and develop intelligent automation tools that enhance system reliability and operational efficiency. Proficient in AWS services, CI/CD pipeline development, and advanced system observability practices for high-availability production environments. Strong expertise leveraging LLMs, boto3, and ARM-based Graviton instances to drive remarkable improvements in reliability, cost optimization, and team productivity.
+             </p>
+        </section>
+
+        <!-- Impact Highlights Section -->
+        <section id="impact-highlights" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Key Impact Highlights</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <div class="impact-card bg-white p-6 rounded-xl shadow-md text-center border-b-4 border-teal-500 hover:shadow-xl transition-shadow">
+                    <p class="text-5xl font-extrabold text-teal-600 mb-2">60%+</p>
+                    <p class="text-lg text-gray-600">Reduction in Incident Triage Time via PlatformAI</p>
+                </div>
+                <div class="impact-card bg-white p-6 rounded-xl shadow-md text-center border-b-4 border-teal-500 hover:shadow-xl transition-shadow">
+                    <p class="text-5xl font-extrabold text-teal-600 mb-2">30%+</p>
+                    <p class="mt-2 text-lg text-gray-600">Monthly Cost Savings with Graviton Migration</p>
+                </div>
+                <div class="impact-card bg-white p-6 rounded-xl shadow-md text-center border-b-4 border-teal-500 hover:shadow-xl transition-shadow">
+                    <p class="text-5xl font-extrabold text-teal-600 mb-2">Top 5</p>
+                    <p class="mt-2 text-lg text-gray-600">Finalist in National-Level Hackathon</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="mb-16 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Technical Skills Radar</h2>
+            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md max-w-2xl mx-auto">
+                <p class="text-gray-600 mb-4">A visual representation of core competencies, showcasing a balanced and strong technical foundation essential for modern SRE roles.</p>
+                <div class="chart-container">
+                    <canvas id="skillsRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Career Journey Section -->
+        <section id="experience" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Career Journey & Education</h2>
+            <div class="relative max-w-3xl mx-auto pl-12 border-l-2 border-gray-200">
+                <!-- Consolidated Timeline Item: Site Reliability Engineer -->
+                <div class="mb-12 timeline-item">
+                    <h3 class="text-2xl font-semibold text-gray-700">Site Reliability Engineer</h3>
+                    <p class="text-md text-gray-500">ADP Pvt. Ltd., Hyderabad | 2019 - Present</p>
+                    <ul class="mt-4 list-disc list-inside text-gray-600 space-y-2">
+                        <li>Pioneered PlatformAI, an LLM-based intelligent automation assistant reducing incident triage time by over 60%.</li>
+                        <li>Spearheaded migration to Graviton instances, achieving over 30% monthly cost savings without performance loss.</li>
+                        <li>Developed and deployed a Webex bot for SRE workflows (HTTP issue analysis, dynamic Splunk queries, auto-Jira tickets, war room initiation).</li>
+                        <li>Built Flask Dashboards (Oneux & HSMQ) for real-time Kubernetes pod health and queue depth monitoring.</li>
+                        <li>Created an Image Drift Detection Tool to compare container images across clusters, ensuring consistent deployments.</li>
+                        <li>Automated provisioning and scaling of AWS infra (EC2, AMI patching, Auto Scaling, Load Balancers).</li>
+                        <li>Practiced DevSecOps using Trivy and SonarQube for image scanning and code quality validation.</li>
+                        <li>Maintained and improved CI/CD pipelines for high-availability production systems.</li>
+                        <li>Contributed to system debugging, performance tuning, and incident management.</li>
+                    </ul>
+                </div>
+                 <!-- Timeline Item: Education -->
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-semibold text-gray-700">B.Tech - Computer Science Engineering (Specialization in IoT)</h3>
+                    <p class="text-md text-gray-500">Chandigarh University | 2015 - 2019</p>
+                     <ul class="mt-4 list-disc list-inside text-gray-600 space-y-2">
+                        <li>Specialized in Internet of Things (IoT), automation, and cloud-native infrastructure.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Projects Section -->
+        <section id="projects" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Featured Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="project-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer" data-project="platformai">
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">PlatformAI</h3>
+                    <p class="text-gray-600">Intelligent automation assistant to streamline SRE workflows, reduce triage time, and automate root cause detection.</p>
+                </div>
+                <div class="project-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer" data-project="graviton">
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">Graviton Migration</h3>
+                    <p class="text-gray-600">Strategic migration of workloads to ARM64-based EC2 instances for significant cost savings and performance optimization.</p>
+                </div>
+                <div class="project-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer" data-project="webexbot">
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">SRE Webex Bot</h3>
+                    <p class="mt-2 text-gray-600">A conversational bot to analyze production issues, suggest Splunk queries, and automate Jira ticket creation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Additional Sections: Courses & Languages -->
+        <section id="additional-info" class="mb-16 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Certifications & Courses</h2>
+                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                    <li>Google Cloud: Introduction to Generative AI</li>
+                    <li>Google Cloud: Introduction to Large Language Models</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Languages</h2>
+                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                    <li>English (Fluent)</li>
+                    <li>Hindi (Native)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-500 text-sm mt-16 py-4">
+            <p>&copy; 2025 Parikshit Sharma. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="project-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 invisible">
+        <div id="modal-content" class="modal-content-inner bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 id="modal-title" class="text-3xl font-bold text-gray-800"></h2>
+                    <button id="modal-close" class="text-gray-500 hover:text-gray-800 text-4xl leading-none">&times;</button>
+                </div>
+                <p id="modal-description" class="mt-4 text-lg text-gray-600"></p>
+                <div id="modal-details" class="mt-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Skills Radar Chart
+            const skillsData = {
+                labels: ['Cloud (AWS)', 'CI/CD & DevOps', 'Automation (Python/Boto3)', 'Containers (Docker/K8s)', 'Observability', 'LLMs & AI'],
+                datasets: [{
+                    label: 'Proficiency',
+                    data: [90, 95, 90, 85, 80, 85],
+                    backgroundColor: 'rgba(20, 184, 166, 0.2)', /* teal-500 with opacity */
+                    borderColor: 'rgba(20, 184, 166, 1)', /* teal-500 */
+                    pointBackgroundColor: 'rgba(20, 184, 166, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(20, 184, 166, 1)'
+                }]
+            };
+
+            const skillsConfig = {
+                type: 'radar',
+                data: skillsData,
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#d1d5db' /* gray-300 */
+                            },
+                            grid: {
+                                color: '#e5e7eb' /* gray-200 */
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 14,
+                                },
+                                color: '#4b5563' /* gray-600 */
+                            },
+                            ticks: {
+                                backdropColor: '#f9fafb', /* stone-50 */
+                                color: '#6b7280', /* gray-500 */
+                                beginAtZero: true,
+                                max: 100,
+                                stepSize: 20,
+                                callback: function(value, index, values) {
+                                    return value === 0 ? '' : value; // Hide 0 label
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.r !== null) {
+                                        label += context.parsed.r + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(
+                document.getElementById('skillsRadarChart'),
+                skillsConfig
+            );
+
+            // Project Modal Logic
+            const projectModal = document.getElementById('project-modal');
+            const modalContentInner = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalDetails = document.getElementById('modal-details');
+            const modalClose = document.getElementById('modal-close');
+
+            const projects = {
+                platformai: {
+                    title: "PlatformAI",
+                    description: "An intelligent automation assistant designed to dramatically reduce the cognitive load on SREs during incidents, leveraging advanced LLM capabilities.",
+                    details: `
+                        <h4 class="font-semibold text-gray-700 mb-2">Key Features:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                            <li>Integrates with Webex for conversational interaction and real-time alerts.</li>
+                            <li>Connects to Splunk to efficiently fetch and analyze logs.</li>
+                            <li>Utilizes LLMs (GPT-3.5/4) for advanced root cause analysis and concise incident summarization.</li>
+                            <li>Automates Jira ticket creation and initiates war rooms with relevant stakeholders.</li>
+                        </ul>
+                        <h4 class="font-semibold text-gray-700 mt-4 mb-2">Tech Stack:</h4>
+                        <p class="text-gray-600">Flask, Python, Boto3, OpenAI API, Webex API, Splunk API, Jira API</p>
+                    `
+                },
+                graviton: {
+                    title: "Graviton Workload Migration",
+                    description: "A strategic initiative to optimize cloud infrastructure costs and enhance performance by migrating critical services to AWS Graviton (ARM64) instances.",
+                    details: `
+                        <h4 class="font-semibold text-gray-700 mb-2">Process & Outcomes:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                            <li>Conducted in-depth analysis of existing instance performance and cost metrics.</li>
+                            <li>Rebuilt and optimized Docker images for ARM64 architecture across EKS, CI/CD jobs, and internal microservices.</li>
+                            <li>Implemented rigorous performance testing to ensure seamless transition and no performance degradation.</li>
+                            <li>Achieved over 30% direct cost savings on monthly cloud expenditure.</li>
+                        </ul>
+                        <h4 class="font-semibold text-gray-700 mt-4 mb-2">Impacted Areas:</h4>
+                        <p class="text-gray-600">EKS Worker Nodes, Jenkins CI/CD jobs, Internal Microservices</p>
+                    `
+                },
+                webexbot: {
+                    title: "SRE Webex Bot",
+                    description: "A conversational bot designed to act as a proactive first responder for SREs, automating initial investigation steps and streamlining incident response.",
+                     details: `
+                        <h4 class="font-semibold text-gray-700 mb-2">Capabilities:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                            <li>Analyzes common HTTP error codes (5xx, 4xx, 503) to provide immediate diagnostic context.</li>
+                            <li>Generates dynamic and relevant Splunk queries tailored to specific issue types.</li>
+                            <li>Automates the creation of pre-populated Jira tickets with all necessary incident details.</li>
+                            <li>Facilitates rapid collaboration by initiating Webex war rooms and inviting on-call engineers.</li>
+                        </ul>
+                        <h4 class="font-semibold text-gray-700 mt-4 mb-2">Goal:</h4>
+                        <p class="text-gray-600">To significantly reduce Mean Time To Resolution (MTTR) by automating repetitive triage tasks and equipping engineers with immediate, actionable data and communication channels.</p>
+                    `
+                }
+            };
+
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const projectKey = card.dataset.project;
+                    const projectData = projects[projectKey];
+                    
+                    modalTitle.textContent = projectData.title;
+                    modalDescription.textContent = projectData.description;
+                    modalDetails.innerHTML = projectData.details;
+
+                    projectModal.classList.add('show');
+                    projectModal.classList.remove('invisible');
+                });
+            });
+
+            const closeModal = () => {
+                projectModal.classList.remove('show');
+                setTimeout(() => {
+                   projectModal.classList.add('invisible');
+                }, 300); // Match transition duration
+            };
+
+            modalClose.addEventListener('click', closeModal);
+            projectModal.addEventListener('click', (e) => {
+                if (e.target === projectModal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
